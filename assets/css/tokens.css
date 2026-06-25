@@ -1,0 +1,36 @@
+:root {
+  /* Drenched world (hero, contact) */
+  --plum: oklch(0.24 0.045 350);
+  --plum-hi: oklch(0.32 0.05 350);
+  --gold: oklch(0.80 0.12 85);
+  --gold-soft: oklch(0.86 0.09 85);
+  --cream: oklch(0.93 0.02 78);
+  --cream-dim: oklch(0.86 0.02 78);
+
+  /* Paper world (about, experience, services) */
+  --paper: oklch(0.95 0.015 80);
+  --paper-2: oklch(0.92 0.018 80);
+  --ink: oklch(0.24 0.012 70);
+  --ink-dim: oklch(0.42 0.012 70);
+  --wine: oklch(0.42 0.10 358);
+  --line: oklch(0.88 0.012 80);
+
+  /* Type */
+  --font-display: 'Libre Caslon Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Fluid scale */
+  --step--1: clamp(0.83rem, 0.2vw + 0.78rem, 0.94rem);
+  --step-0: clamp(1rem, 0.3vw + 0.93rem, 1.15rem);
+  --step-1: clamp(1.4rem, 0.8vw + 1.2rem, 1.9rem);
+  --step-2: clamp(2rem, 2vw + 1.5rem, 3rem);
+  --step-3: clamp(2.6rem, 4vw + 1.6rem, 4.6rem);
+  --step-4: clamp(3.2rem, 6vw + 1.6rem, 6rem);
+
+  /* Space */
+  --space-section: clamp(4rem, 8vw, 8rem);
+  --space-gutter: clamp(1.4rem, 5vw, 4rem);
+
+  /* Film grain (SVG fractal noise) */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
