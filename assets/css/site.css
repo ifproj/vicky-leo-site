@@ -196,9 +196,12 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 /* FOOTER */
 .foot { display: flex; justify-content: space-between; padding: 1.5rem var(--space-gutter); background: var(--plum); color: var(--cream-dim); font-size: var(--step--1); font-family: var(--font-display); }
 
-/* Reveal motion */
-.reveal { opacity: 0; transform: translateY(20px); transition: opacity .9s cubic-bezier(.16,.84,.3,1), transform .9s cubic-bezier(.16,.84,.3,1); }
-.reveal.is-in { opacity: 1; transform: none; }
+/* Reveal motion. Content is visible by default; animations.js hides ONLY
+   below-the-fold elements (adding .pre) and reveals them on scroll. So content
+   is never stuck invisible if JS fails or the observer misbehaves. */
+.reveal { transition: opacity .9s cubic-bezier(.16,.84,.3,1), transform .9s cubic-bezier(.16,.84,.3,1); }
+.reveal.pre { opacity: 0; transform: translateY(20px); }
+.reveal.pre.is-in { opacity: 1; transform: none; }
 
 /* Responsive */
 @media (max-width: 860px) {
@@ -221,6 +224,6 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; transition: none; }
+  .reveal, .reveal.pre { opacity: 1; transform: none; transition: none; }
   .btn:hover { transform: none; }
 }
