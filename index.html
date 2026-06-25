@@ -3,7 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex">
+  <!-- Opt in to entrance/scroll motion only when JS runs and motion is welcome.
+       Set before first paint so the load choreography never flashes. If this
+       script never runs (no JS), the site renders fully visible and static. -->
+  <script>
+    try {
+      if (!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+        document.documentElement.classList.add('vl-anim');
+      }
+    } catch (e) {}
+  </script>
   <title>Vicky Leo — Intelligent Solutions Executive</title>
   <meta name="description" content="Vicky Leo, Intelligent Solutions Executive at Suncorp. Twenty-five years turning complexity into intelligent automation and enterprise AI, delivered at scale.">
   <meta property="og:title" content="Vicky Leo — Intelligent Solutions Executive">
@@ -25,10 +34,12 @@
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <filter id="vl-duo" color-interpolation-filters="sRGB">
       <feColorMatrix type="matrix" values="0.33 0.34 0.33 0 0  0.33 0.34 0.33 0 0  0.33 0.34 0.33 0 0  0 0 0 1 0"/>
+      <!-- Aubergine shadows -> warm rose-gold mids -> soft champagne highlights.
+           Three-point curve keeps skin flattering instead of mustard-yellow. -->
       <feComponentTransfer>
-        <feFuncR type="table" tableValues="0.17 0.92"/>
-        <feFuncG type="table" tableValues="0.10 0.74"/>
-        <feFuncB type="table" tableValues="0.15 0.38"/>
+        <feFuncR type="table" tableValues="0.16 0.62 0.97"/>
+        <feFuncG type="table" tableValues="0.11 0.45 0.90"/>
+        <feFuncB type="table" tableValues="0.19 0.41 0.77"/>
       </feComponentTransfer>
     </filter>
   </svg>
@@ -136,7 +147,7 @@
         </div>
         <figure class="story__media">
           <div class="story__frame">
-            <img src="assets/img/vicky-speaking.jpg" alt="Vicky Leo speaking on a panel at the Technology Leaders Summit in Brisbane" width="1280" height="1707">
+            <img class="kb" src="assets/img/vicky-speaking.jpg" alt="Vicky Leo speaking on a panel at the Technology Leaders Summit in Brisbane" width="1280" height="1707">
             <span class="story__frame-grain" aria-hidden="true"></span>
           </div>
         </figure>
@@ -231,7 +242,7 @@
 
     <!-- ON STAGE (full-width image band) -->
     <figure class="stage" id="on-stage">
-      <img class="stage__img" src="assets/img/vicky-stage.jpg" alt="Vicky Leo on a panel at the Technology Leaders Summit, her name and title shown on the screen behind" width="2048" height="1536">
+      <img class="stage__img kb" src="assets/img/vicky-stage.jpg" alt="Vicky Leo on a panel at the Technology Leaders Summit, her name and title shown on the screen behind" width="2048" height="1536">
       <span class="stage__overlay" aria-hidden="true"></span>
       <figcaption class="stage__cap">
         <span class="stage__eyebrow" data-vl="media.stageEyebrow">On stage</span>

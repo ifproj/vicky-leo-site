@@ -19,7 +19,7 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 400; line-height: 1.
   background: color-mix(in oklch, var(--plum) 88%, transparent); backdrop-filter: blur(8px);
   color: var(--cream);
 }
-.nav__brand { font-family: var(--font-display); font-size: var(--step-1); text-decoration: none; letter-spacing: .01em; }
+.nav__brand { font-family: var(--font-display); font-size: var(--step-1); text-decoration: none; letter-spacing: .01em; white-space: nowrap; }
 .nav__links { display: flex; gap: clamp(.8rem, 2vw, 2rem); font-size: var(--step--1); }
 .nav__links a { text-decoration: none; color: var(--cream-dim); transition: color .3s; }
 .nav__links a:hover { color: var(--gold); }
@@ -64,6 +64,15 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 .frame__cap { position: absolute; left: 14px; bottom: 12px; font-family: var(--font-display); font-size: var(--step-1); color: var(--cream); z-index: 2; }
 .frame__cap small { display: block; font-family: var(--font-body); font-size: .6rem; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-top: .2rem; }
 
+/* Warm light behind the portrait so it reads as lit, not pasted on. */
+.hero__portrait::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  width: 116%; height: 84%; left: 50%; top: 46%; transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, oklch(0.80 0.12 85 / .26), oklch(0.80 0.12 85 / 0) 72%);
+  filter: blur(26px);
+}
+
+
 /* Shared section + paper world */
 .section { padding: var(--space-section) var(--space-gutter); max-width: 1200px; margin: 0 auto; }
 .section__head { margin-bottom: clamp(2rem, 5vw, 4rem); }
@@ -86,12 +95,18 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 
 /* EXPERIENCE timeline */
 .exp__list { list-style: none; margin: 0; padding: 0; }
-.exp__row { display: grid; grid-template-columns: 8rem 1.2fr 1fr; gap: 1rem 1.4rem; align-items: baseline; padding: 1.3rem 0; border-top: 1px solid var(--line); }
+.exp__row {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1.5fr) 1fr;
+  grid-template-areas: "period role org" "period blurb blurb";
+  column-gap: 1.4rem; row-gap: .4rem;
+  align-items: baseline; padding: 1.5rem 0; border-top: 1px solid var(--line);
+}
 .exp__row:first-child { border-top: 2px solid var(--ink); }
-.exp__period { font-family: var(--font-display); color: var(--wine); font-size: var(--step-1); }
-.exp__role { font-weight: 600; }
-.exp__org { color: var(--ink-dim); font-size: var(--step--1); }
-.exp__blurb { grid-column: 2 / 4; color: var(--ink-dim); font-size: var(--step--1); }
+.exp__period { grid-area: period; font-family: var(--font-display); color: var(--wine); font-size: var(--step-1); line-height: 1.05; }
+.exp__role { grid-area: role; font-weight: 600; }
+.exp__org { grid-area: org; color: var(--ink-dim); font-size: var(--step--1); text-align: right; }
+.exp__blurb { grid-area: blurb; color: var(--ink-dim); font-size: var(--step--1); max-width: 58ch; }
 
 /* SERVICES */
 .svc__list { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(1.5rem, 4vw, 3rem); }
@@ -203,14 +218,101 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 .reveal.pre { opacity: 0; transform: translateY(20px); }
 .reveal.pre.is-in { opacity: 1; transform: none; }
 
+/* ============================================================
+   MOTION ENHANCEMENTS
+   Everything below is additive and fail-safe: the static layout
+   stands on its own. Entrance + zoom effects are gated behind
+   .vl-anim (added by JS only when prefers-reduced-motion is off),
+   so no-JS and reduced-motion visitors get the calm version.
+   ============================================================ */
+
+/* Keyframes */
+@keyframes vl-rise   { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+@keyframes vl-fade   { from { opacity: 0; } to { opacity: 1; } }
+@keyframes vl-portrait-in { from { opacity: 0; transform: translateY(26px) scale(.965); } to { opacity: 1; transform: none; } }
+
+/* Hero load choreography — the site's one rehearsed entrance.
+   Staggered rise of the copy, a softer settle for the portrait. */
+.vl-anim .hero__kicker,
+.vl-anim .hero__headline,
+.vl-anim .hero__lede,
+.vl-anim .hero__cta,
+.vl-anim .hero__featured { animation: vl-rise .85s var(--ease-out-expo) both; }
+.vl-anim .hero__kicker   { animation-delay: .05s; }
+.vl-anim .hero__headline { animation-delay: .15s; }
+.vl-anim .hero__lede     { animation-delay: .30s; }
+.vl-anim .hero__cta      { animation-delay: .42s; }
+.vl-anim .hero__featured { animation-delay: .54s; }
+.vl-anim .hero__portrait { animation: vl-portrait-in 1.1s var(--ease-out-expo) .18s both; }
+.vl-anim .hero__amp      { animation: vl-fade 1.8s ease-out .35s both; }
+
+/* Safety net: if the entrance never advances (background tab, stalled
+   animations), JS adds .vl-shown after ~1.8s to force the visible end-state.
+   Cancelling the animation lets the base (visible) styles win. */
+.vl-anim.vl-shown .hero__kicker,
+.vl-anim.vl-shown .hero__headline,
+.vl-anim.vl-shown .hero__lede,
+.vl-anim.vl-shown .hero__cta,
+.vl-anim.vl-shown .hero__featured,
+.vl-anim.vl-shown .hero__portrait,
+.vl-anim.vl-shown .hero__amp { animation: none; opacity: 1; transform: none; }
+
+/* Slow "settle" zoom for editorial images as they enter view.
+   Contained by overflow:hidden frames; transform-only, so cheap. */
+.vl-anim .kb { transform: scale(1.07); }
+.vl-anim .kb.kb-in { transform: scale(1); transition: transform 1.9s var(--ease-out-quint); }
+
+/* Scroll-reveal stagger for items that share a row, so grids cascade
+   in rather than popping as one block. */
+.svc__item.reveal:nth-child(2)  { transition-delay: .08s; }
+.svc__item.reveal:nth-child(3)  { transition-delay: .16s; }
+.svc__item.reveal:nth-child(4)  { transition-delay: .24s; }
+.press-item.reveal:nth-child(2) { transition-delay: .07s; }
+.press-item.reveal:nth-child(3) { transition-delay: .14s; }
+.press-item.reveal:nth-child(4) { transition-delay: .21s; }
+
+/* Impact stats: let the block fade, the figures cascade up individually. */
+.vl-anim .stats.reveal.pre { transform: none; }
+.vl-anim .stats.reveal.pre li { opacity: 0; transform: translateY(14px); }
+.vl-anim .stats.reveal.is-in li {
+  opacity: 1; transform: none;
+  transition: opacity .7s var(--ease-out-expo), transform .7s var(--ease-out-expo);
+}
+.vl-anim .stats.reveal.is-in li:nth-child(2) { transition-delay: .07s; }
+.vl-anim .stats.reveal.is-in li:nth-child(3) { transition-delay: .14s; }
+.vl-anim .stats.reveal.is-in li:nth-child(4) { transition-delay: .21s; }
+.vl-anim .stats.reveal.is-in li:nth-child(5) { transition-delay: .28s; }
+
+/* Sticky nav gains a hairline + lift once the page leaves the top. */
+.nav { transition: background .4s ease, box-shadow .45s ease; }
+.nav.is-scrolled {
+  background: color-mix(in oklch, var(--plum) 96%, transparent);
+  box-shadow: 0 1px 0 oklch(0.80 0.12 85 / .22), 0 14px 34px -26px rgba(0,0,0,.75);
+}
+
+/* Nav links: a gold underline that grows from the left, alongside color. */
+.nav__links a { position: relative; }
+.nav__links a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -.35rem; height: 1px;
+  background: var(--gold); transform: scaleX(0); transform-origin: left;
+  transition: transform .35s var(--ease-out-expo);
+}
+.nav__links a:hover::after,
+.nav__links a:focus-visible::after { transform: scaleX(1); }
+
+/* Tactile press on buttons; the gold CTA also warms slightly on hover. */
+.btn:active { transform: translateY(0) scale(.985); }
+.btn--gold { transition: transform .4s cubic-bezier(.16,.84,.3,1), background-color .3s ease, box-shadow .3s ease; }
+.btn--gold:hover { background: var(--gold-soft); box-shadow: 0 10px 24px -14px oklch(0.80 0.12 85 / .8); }
+
 /* Responsive */
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 5rem; }
   .hero__portrait { order: -1; margin-bottom: 1.5rem; }
   .about { grid-template-columns: 1fr; }
   .svc__list { grid-template-columns: 1fr; }
-  .exp__row { grid-template-columns: 6rem 1fr; }
-  .exp__org, .exp__blurb { grid-column: 2 / 3; }
+  .exp__row { grid-template-columns: 5rem 1fr; grid-template-areas: "period role" "period org" "period blurb"; row-gap: .2rem; }
+  .exp__org { text-align: left; }
   .nav__links { gap: .9rem; font-size: .75rem; }
   .stats { grid-template-columns: repeat(2, 1fr); }
   .story__inner { grid-template-columns: 1fr; gap: 2rem; }
@@ -222,8 +324,22 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
   .recog__item { grid-template-columns: 4.5rem 1fr; gap: 1rem; }
 }
 
+/* Phones: keep the brand on one line and fit the nav row without collision. */
+@media (max-width: 560px) {
+  .nav { padding: .85rem 1rem; gap: .75rem; }
+  .nav__brand { font-size: 1.2rem; }
+  .nav__links { gap: .72rem; font-size: .7rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal, .reveal.pre { opacity: 1; transform: none; transition: none; }
-  .btn:hover { transform: none; }
+  .btn:hover, .btn:active { transform: none; }
+  /* Defensive: neutralize entrance choreography + zoom even if .vl-anim slips in. */
+  .vl-anim .hero__kicker, .vl-anim .hero__headline, .vl-anim .hero__lede,
+  .vl-anim .hero__cta, .vl-anim .hero__featured, .vl-anim .hero__portrait,
+  .vl-anim .hero__amp { animation: none; opacity: 1; transform: none; }
+  .vl-anim .kb, .vl-anim .kb.kb-in { transform: none; }
+  .vl-anim .stats.reveal.pre li, .vl-anim .stats.reveal.is-in li { opacity: 1; transform: none; transition: none; }
+  .svc__item.reveal, .press-item.reveal { transition-delay: 0s; }
 }
